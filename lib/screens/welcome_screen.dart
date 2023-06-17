@@ -1,80 +1,94 @@
+import 'package:flash_chat/screens/login_screen.dart';
+import 'package:flash_chat/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flash_chat/Components/roundedbutton.dart';
 
 class WelcomeScreen extends StatefulWidget {
+  static String id = 'welcome_screen';
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+  late Animation animation;
+
   @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+        duration: Duration(seconds: 3), vsync: this, upperBound: 1);
+    animation =
+        ColorTween(begin: Colors.blue, end: Colors.white).animate(controller);
+    controller.forward();
+    controller.addListener(() {
+      setState(() {});
+      print(animation.value);
+    });
+  }
+
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: animation.value,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Row(
               children: <Widget>[
-                Container(
-                  height: 100.0,
-
-                  child: Image.asset("images/logos.png"),
-                ),
-                Text(
-                  'Flash Chat',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 40.0,
-                   // fontWeight: FontWeight.w900,
+                Hero(
+                  tag: 'logo',
+                  child: SizedBox(
+                    height: 100,
+                    child: Image.asset("images/logos.png"),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(
+
+                SizedBox(
+                  height: 40,
+                  child: DefaultTextStyle(
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 40,
+                        ),
+                    child: AnimatedTextKit(
+                      repeatForever: true,
+                      isRepeatingAnimation: true,
+                      animatedTexts: [
+                        TypewriterAnimatedText('Flash chat'),
+                      ],
+                    ),
+                  ),
+                ),
+
+
+        ],
+      ),
+            const SizedBox(
               height: 48.0,
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Material(
-                elevation: 5.0,
-                color: Colors.lightBlueAccent,
-                borderRadius: BorderRadius.circular(30.0),
-                child: MaterialButton(
-                  onPressed: () {
-                    //Go to login screen.
-                  },
-                  minWidth: 200.0,
-                  height: 42.0,
-                  child: Text(
-                    'Log In',
-                  ),
-                ),
-              ),
+            RoundedButton( color: Colors.blueAccent, title: 'Log In', id: LoginScreen.id,),
+            const SizedBox(
+              height: 8.0,
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Material(
-                color: Colors.blueAccent,
-                borderRadius: BorderRadius.circular(30.0),
-                elevation: 5.0,
-                child: MaterialButton(
-                  onPressed: () {
-                    //Go to registration screen.
-                  },
-                  minWidth: 200.0,
-                  height: 42.0,
-                  child: Text(
-                    'Register',
-                  ),
-                ),
-              ),
-            ),
+           RoundedButton(
+
+            color: Colors.blue, title: 'Register', id: RegistrationScreen.id, )
           ],
         ),
+
       ),
+
     );
   }
 }
+
