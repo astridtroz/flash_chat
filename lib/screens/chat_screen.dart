@@ -78,20 +78,20 @@ class _ChatScreenState extends State<ChatScreen> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final messages = snapshot.data?.docs;
-                  List<MessageBubble> messsageBubbles = [];
+                  List<MessageBubble> messageBubbles = [];
 
                   for (var message in messages!) {
                     final messageText = message.data()['text'];
                     final messageSender = message.data()['sender'];
                     final messageBubble = MessageBubble(text: messageText, sender: messageSender);
-                    messageBubble.add(messageBubble);
+                    messageBubbles.add(messageBubble);
                   }
 
                   return Expanded(
                     child: ListView(
                       padding: EdgeInsets.symmetric(
                           horizontal: 10, vertical: 20),
-                      children: messsageBubbles,
+                      children: messageBubbles,
                     ),
                   );
                 } else {
@@ -140,13 +140,30 @@ class _ChatScreenState extends State<ChatScreen> {
   final String sender;
     @override
     Widget build(BuildContext context) {
-      return Material(
-        color: Colors.lightBlueAccent,
-        child: Text(
-          '$text from $sender',
-          style: TextStyle(
-            fontSize: 30,
-          ),),
+      return Padding(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children:[
+            Text(sender,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.white54
+            ),),
+            Material(
+              borderRadius: BorderRadius.circular(30),
+              color: Colors.lightBlueAccent,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: Text(
+                  '$text ',
+                  style: TextStyle(
+                    fontSize: 15,
+                  ),),
+              ),
+            ),
+          ] 
+        ),
       );
     }
   }
