@@ -69,31 +69,28 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            StreamBuilder( stream: _firestore.collection('messages').snapshots(),
-              builder:(context,snapshot){
-              if(!snapshot.hasData){
-                final messages= snapshot.data?.docs;
-                List<Text> messageWidget=[];
-                for(var message in messages!){
-                  final messageText=message.data['text'];
-                  final messageSender=message.data['sender'];
-                  final messageWidget=Text('$messageText from $messageSender');
-                  messageWidget.add(messageWidget);
+            StreamBuilder(
+              stream: _firestore.collection('messages').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final messages = snapshot.data?.docs;
+                  List<Text> messageWidgets = [];
+
+                  for (var message in messages!) {
+                    final messageText = message['text'];
+                    final messageSender = message['sender'];
+                    final messageWidgetText = Text('$messageText from $messageSender');
+                    messageWidgets.add(messageWidgetText);
+                  }
+
+                  return Column(
+                    children: messageWidgets,
+                  );
+                } else {
+                  // Handle the case when snapshot doesn't have data yet
+                  return const CircularProgressIndicator();
                 }
-               /* return Column(
-                  children: messageWidget,
-                );
-                return Center(
-                  child: CircularProgressIndicator(
-                    backgroundColor: Colors.lightBlue,
-                  ),
-
-                );*/
-              }
-
-
               },
-
             ),
             Container(
               decoration: kMessageContainerDecoration,
