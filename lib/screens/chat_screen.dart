@@ -74,11 +74,11 @@ class _ChatScreenState extends State<ChatScreen> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final messages = snapshot.data?.docs;
-                  List<Text> messageWidgets = [];
+                  List<Widget> messageWidgets = [];
 
                   for (var message in messages!) {
-                    final messageText = message['text'];
-                    final messageSender = message['sender'];
+                    final messageText = message.data()['text'];
+                    final messageSender = message.data()['sender'];
                     final messageWidgetText = Text('$messageText from $messageSender');
                     messageWidgets.add(messageWidgetText);
                   }
