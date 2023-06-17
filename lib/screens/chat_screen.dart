@@ -12,39 +12,43 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final _auth= FirebaseAuth.instance;
-  final _firestore= FirebaseFirestore.instance;
-   late User loggedInUSer;
-   late String messageText;
-   @override
-   void initState(){
-     super.initState();
-     getCurrentUser();
-   }
-  void getCurrentUser() async{
-    final user=  await _auth.currentUser!;
+  final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
+  late User loggedInUSer;
+  late String messageText;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    final user = await _auth.currentUser!;
     try {
       if (user != null) {
         loggedInUSer = user;
         print(loggedInUSer.email);
       }
-    } catch(e){
+    } catch (e) {
       print(e);
     }
   }
- // void getMessages() async{
-    // final messages= await _firestore.collection('messages').get();
-    // for(var message in messages.docs){
-    //   print(message.data());
-    // }
- // }
-  void messageStream() async{
-     await for(var snapshot in _firestore.collection('messages').snapshots()){
-       for(var message in snapshot.docs){
-         print(message.data());
-       }
-     }
+
+  // void getMessages() async{
+  // final messages= await _firestore.collection('messages').get();
+  // for(var message in messages.docs){
+  //   print(message.data());
+  // }
+  // }
+  void messageStream() async {
+    await for (var snapshot in _firestore.collection('messages').snapshots()) {
+      for (var message in snapshot.docs) {
+        print(message.data());
+      }
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,8 +60,8 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: () {
                 messageStream();
                 //getMessages();
-               // _auth.signOut();
-               // Navigator.pop(context);
+                // _auth.signOut();
+                // Navigator.pop(context);
                 //Implement logout functionality
               }),
         ],
@@ -74,17 +78,21 @@ class _ChatScreenState extends State<ChatScreen> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final messages = snapshot.data?.docs;
-                  List<Widget> messageWidgets = [];
+                  List<MessageBubble> messsageBubbles = [];
 
                   for (var message in messages!) {
                     final messageText = message.data()['text'];
                     final messageSender = message.data()['sender'];
-                    final messageWidgetText = Text('$messageText from $messageSender');
-                    messageWidgets.add(messageWidgetText);
+                    final messageBubble = MessageBubble(text: messageText, sender: messageSender);
+                    messageBubble.add(messageBubble);
                   }
 
-                  return Column(
-                    children: messageWidgets,
+                  return Expanded(
+                    child: ListView(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      children: messsageBubbles,
+                    ),
                   );
                 } else {
                   // Handle the case when snapshot doesn't have data yet
@@ -100,17 +108,17 @@ class _ChatScreenState extends State<ChatScreen> {
                   Expanded(
                     child: TextField(
                       onChanged: (value) {
-                      messageText=value;
+                        messageText = value;
                       },
                       decoration: kMessageTextFieldDecoration,
                     ),
                   ),
                   TextButton(
                     onPressed: () {
-                       _firestore.collection('messages').add({
-                         'text':messageText,
-                         'sender':loggedInUSer.email,
-                       });
+                      _firestore.collection('messages').add({
+                        'text': messageText,
+                        'sender': loggedInUSer.email,
+                      });
                     },
                     child: Text(
                       'Send',
@@ -126,3 +134,21 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
+  class MessageBubble extends StatelessWidget {
+    MessageBubble({required this.text, required this.sender});
+  final String text;
+  final String sender;
+    @override
+    Widget build(BuildContext context) {
+      return Material(
+        color: Colors.lightBlueAccent,
+        child: Text(
+          '$text from $sender',
+          style: TextStyle(
+            fontSize: 30,
+          ),),
+      );
+    }
+  }
+  
+
